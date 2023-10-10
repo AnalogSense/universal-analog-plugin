@@ -20,5 +20,11 @@ To install it, follow these simple steps:
 - Wooting Lekker
 - Wooting Two
 - Wooting One
+- Wooting UwU
+- Wooting UwU RGB
 - Razer Huntsman V2 Analog
 - Razer Huntsman Mini Analog (Untested)
+
+Note that most of the heavy lifting of supporting the keyboards is done in [soup::AnalogueKeyboard](https://github.com/calamity-inc/Soup/blob/senpai/soup/AnalogueKeyboard.cpp).
+
+If your keyboard is not mentioned here, please refer to [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1).
