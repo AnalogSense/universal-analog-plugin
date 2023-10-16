@@ -3,6 +3,13 @@
 #include <soup/AnalogueKeyboard.hpp>
 #include <soup/Thread.hpp>
 
+// Some Analog SDK apps rely on read_full_buffer sending a 0 value for released keys instead of stopping to report the key.
+#define REPORT_RELEASED_KEYS true
+
+#if REPORT_RELEASED_KEYS
+#include <unordered_set>
+#endif
+
 // Types
 
 using DeviceID = uint64_t;
@@ -60,8 +67,8 @@ static bool running = true;
 static soup::Thread poll_thread;
 
 static uint8_t actives = 0;
-static uint16_t active_codes[16];
-static float active_analogues[16];
+static uint16_t active_codes[REPORT_RELEASED_KEYS ? 32 : 16];
+static float active_analogues[REPORT_RELEASED_KEYS ? 32 : 16];
 
 SOUP_CEXPORT int _initialise(void* data, void(*callback)(void* data, DeviceEventType eventType, DeviceInfo* deviceInfo))
 {
@@ -94,8 +101,40 @@ SOUP_CEXPORT int _initialise(void* data, void(*callback)(void* data, DeviceEvent
 	return 1;
 }
 
+#if REPORT_RELEASED_KEYS
+static std::unordered_set<uint16_t> pending_release;
+#endif
+
 SOUP_CEXPORT int _read_full_buffer(uint16_t* code_buffer, float* analog_buffer, uint32_t len, DeviceID device)
 {
+#if REPORT_RELEASED_KEYS
+	if (!pending_release.empty())
+	{
+		// Keys that are still being pressed don't need a release this update
+		for (uint8_t i = 0; i != actives; ++i)
+		{
+			pending_release.erase(active_codes[i]);
+		}
+
+		// Discharge released keys
+		for (const auto& code : pending_release)
+		{
+			active_codes[actives] = code;
+			active_analogues[actives] = 0.0f;
+			actives++;
+		}
+		pending_release.clear();
+	}
+
+	// Remember active keys for next update
+	for (uint8_t i = 0; i != actives; ++i)
+	{
+		if (active_analogues[i] != 0.0f)
+		{
+			pending_release.emplace(active_codes[i]);
+		}
+	}
+#endif
 	if (len > actives)
 	{
 		len = actives;
