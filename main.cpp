@@ -48,7 +48,7 @@ SOUP_CEXPORT bool is_initialised()
 
 static DeviceInfo dev_info{ 0xFFFF, 0xFFFF, "Unknown", "Soup-compatible Analog Keyboard", 0, DeviceType::Keyboard };
 
-SOUP_CEXPORT int _device_info(DeviceInfo** buffer, uint32_t len)
+SOUP_CEXPORT int _device_info(DeviceInfo* buffer[], uint32_t len)
 {
 	buffer[0] = &dev_info;
 	return 1;
