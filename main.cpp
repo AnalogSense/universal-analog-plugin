@@ -1,6 +1,7 @@
 #include <thread>
 
 #include <soup/AnalogueKeyboard.hpp>
+#include <soup/HidScancode.hpp>
 #include <soup/Thread.hpp>
 
 // Some Analog SDK apps rely on read_full_buffer sending a 0 value for released keys instead of stopping to report the key.
@@ -70,6 +71,20 @@ static uint8_t actives = 0;
 static uint16_t active_codes[REPORT_RELEASED_KEYS ? 32 : 16];
 static float active_analogues[REPORT_RELEASED_KEYS ? 32 : 16];
 
+[[nodiscard]] static uint16_t mapToWootingKey(soup::Key key)
+{
+	switch (key)
+	{
+	case soup::KEY_OEM_1: return 0x403;
+	case soup::KEY_OEM_2: return 0x404;
+	case soup::KEY_OEM_3: return 0x405;
+	case soup::KEY_OEM_4: return 0x408;
+	case soup::KEY_FN: return 0x409;
+	default:;
+	}
+	return soup::soup_key_to_hid_scancode(key);
+}
+
 SOUP_CEXPORT int _initialise(void* data, void(*callback)(void* data, DeviceEventType eventType, DeviceInfo* deviceInfo))
 {
 	poll_thread.start([]
@@ -84,7 +99,7 @@ SOUP_CEXPORT int _initialise(void* data, void(*callback)(void* data, DeviceEvent
 					uint8_t i = 0;
 					for (const auto& key : keys)
 					{
-						active_codes[i] = (key.getSoupKey() == soup::KEY_FN ? 0x409 : key.getHidScancode());
+						active_codes[i] = mapToWootingKey(key.getSoupKey());
 						active_analogues[i] = key.getFValue();
 						++i;
 					}
