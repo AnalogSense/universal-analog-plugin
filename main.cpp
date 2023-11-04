@@ -75,6 +75,10 @@ static float active_analogues[REPORT_RELEASED_KEYS ? 32 : 16];
 {
 	switch (key)
 	{
+	case soup::KEY_NEXT_TRACK: return 0x3B5;
+	case soup::KEY_PREV_TRACK: return 0x3B6;
+	case soup::KEY_STOP_MEDIA: return 0x3B7;
+	case soup::KEY_PLAY_PAUSE: return 0x3CD;
 	case soup::KEY_OEM_1: return 0x403;
 	case soup::KEY_OEM_2: return 0x404;
 	case soup::KEY_OEM_3: return 0x405;
