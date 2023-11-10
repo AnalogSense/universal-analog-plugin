@@ -124,6 +124,18 @@ SOUP_CEXPORT int _initialise(void* data, void(*callback)(void* data, DeviceEvent
 static std::unordered_set<uint16_t> pending_release;
 #endif
 
+SOUP_CEXPORT float read_analog(uint16_t code)
+{
+	for (uint8_t i = 0; i != actives; ++i)
+	{
+		if (active_codes[i] == code)
+		{
+			return active_analogues[i];
+		}
+	}
+	return 0.0f;
+}
+
 SOUP_CEXPORT int _read_full_buffer(uint16_t* code_buffer, float* analog_buffer, uint32_t len, DeviceID device)
 {
 #if REPORT_RELEASED_KEYS
