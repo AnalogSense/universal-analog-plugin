@@ -91,7 +91,7 @@ static float active_analogues[REPORT_RELEASED_KEYS ? 32 : 16];
 
 SOUP_CEXPORT int _initialise(void* data, void(*callback)(void* data, DeviceEventType eventType, DeviceInfo* deviceInfo))
 {
-	poll_thread.start([]
+	poll_thread.start([](soup::Capture&&)
 	{
 		while (running)
 		{
