@@ -2,29 +2,18 @@
 
 A plugin for the [Wooting Analog SDK](https://github.com/WootingKb/wooting-analog-sdk) that makes it support a wider range of keyboards.
 
-Note that universal-analog-plugin acts as a replacement for wooting-analog-plugin.
+## Setup
 
-To install it, follow these simple steps:
-
-1. Navigate to `C:\Program Files\WootingAnalogPlugins` in your File Explorer
-2. Create a new folder called `_disabled`
-3. Move the `wooting-analog-plugin` folder into the `_disabled` folder
-4. Create a new folder called `universal-analog-plugin`
-5. Drop the `universal-analog-plugin.dll` into the `universal-analog-plugin` folder
+1. Download the latest `universal-analog-plugin.dll` from [the releases page](https://github.com/calamity-inc/universal-analog-plugin/releases)
+2. Navigate to `C:\Program Files\WootingAnalogPlugins` in your File Explorer
+3. Create a new folder called `universal-analog-plugin`
+4. Drop the `universal-analog-plugin.dll` into the `universal-analog-plugin` folder
 
 ## Supported Keyboards
 
-- Wooting Two HE
-- Wooting Two HE ARM
-- Wooting 60 HE ARM
-- Wooting Lekker
-- Wooting Two
-- Wooting One
-- Wooting UwU
-- Wooting UwU RGB
 - Razer Huntsman V2 Analog
 - Razer Huntsman Mini Analog (Untested)
 
-Note that most of the heavy lifting of supporting the keyboards is done in [soup::AnalogueKeyboard](https://github.com/calamity-inc/Soup/blob/senpai/soup/AnalogueKeyboard.cpp).
+Although the scope of this project goes beyond Razer keyboards, they are currently the only manufacturer of analog keyboards who bothered enough to make the data accessible (besides Wooting). You can view [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1) for all keyboards on my radar, and which ones I've already bought and attempted to get working.
 
-If your keyboard is not mentioned here, please refer to [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1).
+Note that the actual logic for interacting with the devices is in [Soup](https://soup.do).

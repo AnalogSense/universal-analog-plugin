@@ -137,17 +137,20 @@ SOUP_CEXPORT int _initialise(void* data, void(*callback)(void* data, DeviceEvent
 		{
 			for (auto& kbd : soup::AnalogueKeyboard::getAll())
 			{
-				while (running && !kbd.disconnected)
+				if (kbd.hid.usage_page != 0xFF54) // not a Wooting device?
 				{
-					auto keys = kbd.getActiveKeys();
-					uint8_t i = 0;
-					for (const auto& key : keys)
+					while (running && !kbd.disconnected)
 					{
-						active_codes[i] = mapToWootingKey(key.getSoupKey());
-						active_analogues[i] = key.getFValue();
-						++i;
+						auto keys = kbd.getActiveKeys();
+						uint8_t i = 0;
+						for (const auto& key : keys)
+						{
+							active_codes[i] = mapToWootingKey(key.getSoupKey());
+							active_analogues[i] = key.getFValue();
+							++i;
+						}
+						actives = i;
 					}
-					actives = i;
 				}
 			}
 			if (!running)
