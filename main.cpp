@@ -4,6 +4,8 @@
 #include <soup/HidScancode.hpp>
 #include <soup/Thread.hpp>
 
+#define ABI_VERSION_TARGET 0
+
 // Some Analog SDK apps rely on read_full_buffer sending a 0 value for released keys instead of stopping to report the key.
 #define REPORT_RELEASED_KEYS true
 
@@ -40,6 +42,7 @@ struct DeviceInfo
 
 // Rust interop stuff
 
+#if ABI_VERSION_TARGET == 0
 #pragma comment(lib, "wooting_analog_common.lib")
 #pragma comment(lib, "Userenv.lib")
 #pragma comment(lib, "ntdll.lib")
@@ -52,10 +55,28 @@ extern "C"
 	DeviceInfo* new_device_info(uint16_t vendor_id, uint16_t product_id, const char* manufacturer_name, const char* device_name, DeviceID device_id, DeviceType device_type);
 	void drop_device_info(DeviceInfo* device);
 }
+#else
+inline DeviceInfo* new_device_info(uint16_t vendor_id, uint16_t product_id, const char* manufacturer_name, const char* device_name, DeviceID device_id, DeviceType device_type)
+{
+	return new DeviceInfo(vendor_id, product_id, manufacturer_name, device_name, device_id, device_type);
+}
+
+inline void drop_device_info(DeviceInfo* device)
+{
+	delete device;
+}
+#endif
 
 // Boilerplate
 
-SOUP_CEXPORT const uint32_t ANALOG_SDK_PLUGIN_ABI_VERSION = 0;
+SOUP_CEXPORT const uint32_t ANALOG_SDK_PLUGIN_ABI_VERSION = ABI_VERSION_TARGET;
+
+#if ABI_VERSION_TARGET >= 1
+#define _name name
+#define _device_info device_info
+#define _initialise initialise
+#define _read_full_buffer read_full_buffer
+#endif
 
 SOUP_CEXPORT const char* _name()
 {
