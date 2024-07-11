@@ -2,3 +2,4 @@ int/
 *.dll
 *.exp
 *.lib
+!wooting_analog_common.lib

@@ -38,6 +38,21 @@ struct DeviceInfo
 	DeviceType device_type;
 };
 
+// Rust interop stuff
+
+#pragma comment(lib, "wooting_analog_common.lib")
+#pragma comment(lib, "Userenv.lib")
+#pragma comment(lib, "ntdll.lib")
+#pragma comment(lib, "Bcrypt.lib")
+#pragma comment(lib, "Ws2_32.lib")
+#pragma comment(lib, "Advapi32.lib")
+
+extern "C"
+{
+	DeviceInfo* new_device_info(uint16_t vendor_id, uint16_t product_id, const char* manufacturer_name, const char* device_name, DeviceID device_id, DeviceType device_type);
+	void drop_device_info(DeviceInfo* device);
+}
+
 // Boilerplate
 
 SOUP_CEXPORT const uint32_t ANALOG_SDK_PLUGIN_ABI_VERSION = 0;
@@ -54,11 +69,15 @@ SOUP_CEXPORT bool is_initialised()
 
 // Dummy device
 
-static DeviceInfo dev_info{ 0xFFFF, 0xFFFF, "Unknown", "Soup-compatible Analog Keyboard", 0, DeviceType::Keyboard };
+static DeviceInfo* dev_info = nullptr;
 
 SOUP_CEXPORT int _device_info(DeviceInfo* buffer[], uint32_t len)
 {
-	buffer[0] = &dev_info;
+	if (!dev_info)
+	{
+		dev_info = new_device_info(0xFFFF, 0xFFFF, "Unknown", "Soup-compatible Analog Keyboard", 0, DeviceType::Keyboard);
+	}
+	buffer[0] = dev_info;
 	return 1;
 }
 
