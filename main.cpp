@@ -91,12 +91,13 @@ SOUP_CEXPORT bool is_initialised()
 // Dummy device
 
 static DeviceInfo* dev_info = nullptr;
+static std::string dev_name = "Soup-compatible Analog Keyboard";
 
 SOUP_CEXPORT int _device_info(DeviceInfo* buffer[], uint32_t len)
 {
 	if (!dev_info)
 	{
-		dev_info = new_device_info(0xFFFF, 0xFFFF, "Unknown", "Soup-compatible Analog Keyboard", 0, DeviceType::Keyboard);
+		dev_info = new_device_info(0xFFFF, 0xFFFF, "Unknown", dev_name.c_str(), 0, DeviceType::Keyboard);
 	}
 	buffer[0] = dev_info;
 	return 1;
@@ -139,6 +140,7 @@ SOUP_CEXPORT int _initialise(void* data, void(*callback)(void* data, DeviceEvent
 			{
 				if (kbd.hid.usage_page != 0xFF54) // not a Wooting device?
 				{
+					dev_name = kbd.name;
 					while (running && !kbd.disconnected)
 					{
 						auto keys = kbd.getActiveKeys();
