@@ -2,6 +2,7 @@
 
 #include <soup/AnalogueKeyboard.hpp>
 #include <soup/HidScancode.hpp>
+#include <soup/os.hpp>
 #include <soup/Thread.hpp>
 
 #define ABI_VERSION_TARGET 0
@@ -91,16 +92,15 @@ SOUP_CEXPORT bool is_initialised()
 // Dummy device
 
 static DeviceInfo* dev_info = nullptr;
-static std::string dev_name = "Soup-compatible Analog Keyboard";
 
 SOUP_CEXPORT int _device_info(DeviceInfo* buffer[], uint32_t len)
 {
-	if (!dev_info)
+	if (dev_info)
 	{
-		dev_info = new_device_info(0xFFFF, 0xFFFF, "Unknown", dev_name.c_str(), 0, DeviceType::Keyboard);
+		buffer[0] = dev_info;
+		return 1;
 	}
-	buffer[0] = dev_info;
-	return 1;
+	return 0;
 }
 
 // Actual important stuff
@@ -130,8 +130,16 @@ static float active_analogues[REPORT_RELEASED_KEYS ? 32 : 16];
 	return soup::soup_key_to_hid_scancode(key);
 }
 
-SOUP_CEXPORT int _initialise(void* data, void(*callback)(void* data, DeviceEventType eventType, DeviceInfo* deviceInfo))
+using event_handler_t = void(*)(void* data, DeviceEventType eventType, DeviceInfo* deviceInfo);
+
+static void* event_handler_data;
+static event_handler_t event_handler;
+static bool got_initial_devices = false;
+
+SOUP_CEXPORT int _initialise(void* data, event_handler_t callback)
 {
+	event_handler_data = data;
+	event_handler = callback;
 	poll_thread.start([](soup::Capture&&)
 	{
 		while (running)
@@ -140,7 +148,12 @@ SOUP_CEXPORT int _initialise(void* data, void(*callback)(void* data, DeviceEvent
 			{
 				if (kbd.hid.usage_page != 0xFF54) // not a Wooting device?
 				{
-					dev_name = kbd.name;
+					dev_info = new_device_info(0xFFFF, 0xFFFF, "Unknown", kbd.name.c_str(), 0, DeviceType::Keyboard);
+					if (got_initial_devices)
+					{
+						event_handler(event_handler_data, DeviceEventType::Connected, dev_info);
+					}
+					got_initial_devices = true;
 					while (running && !kbd.disconnected)
 					{
 						auto keys = kbd.getActiveKeys();
@@ -153,16 +166,24 @@ SOUP_CEXPORT int _initialise(void* data, void(*callback)(void* data, DeviceEvent
 						}
 						actives = i;
 					}
+					event_handler(event_handler_data, DeviceEventType::Disconnected, dev_info);
+					drop_device_info(dev_info);
+					dev_info = nullptr;
 				}
 			}
 			if (!running)
 			{
 				break;
 			}
+			got_initial_devices = true;
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 	});
-	return 1;
+	while (!got_initial_devices)
+	{
+		soup::os::sleep(1);
+	}
+	return dev_info ? 1 : 0;
 }
 
 #if REPORT_RELEASED_KEYS
