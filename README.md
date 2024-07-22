@@ -20,4 +20,4 @@ Note that Razer Synapse needs to be running.
 
 Although the scope of this project goes beyond Razer keyboards, they are currently the only manufacturer of analog keyboards who bothered enough to make the data accessible (besides Wooting). You can view [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1) for all keyboards on my radar, and which ones I've already bought and attempted to get working.
 
-Note that the actual logic for interacting with the devices is in [Soup](https://soup.do).
+Note that the actual logic for interacting with the devices is in [soup::AnalogueKeyboard](https://github.com/calamity-inc/Soup/blob/senpai/soup/AnalogueKeyboard.cpp).
