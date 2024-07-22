@@ -1,5 +1,3 @@
-#include <thread>
-
 #include <soup/AnalogueKeyboard.hpp>
 #include <soup/HidScancode.hpp>
 #include <soup/os.hpp>
@@ -176,7 +174,7 @@ SOUP_CEXPORT int _initialise(void* data, event_handler_t callback)
 				break;
 			}
 			got_initial_devices = true;
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			soup::os::sleep(100);
 		}
 	});
 	while (!got_initial_devices)
