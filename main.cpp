@@ -1,7 +1,9 @@
 #include <soup/AnalogueKeyboard.hpp>
 #include <soup/HidScancode.hpp>
 #include <soup/os.hpp>
+#include <soup/RecursiveMutex.hpp>
 #include <soup/Thread.hpp>
+#include <soup/SharedPtr.hpp>
 
 #define ABI_VERSION_TARGET 0
 
@@ -87,28 +89,59 @@ SOUP_CEXPORT bool is_initialised()
 	return true;
 }
 
-// Dummy device
+// Devices
 
-static DeviceInfo* dev_info = nullptr;
+[[nodiscard]] static DeviceID make_device_id(const soup::AnalogueKeyboard& kbd)
+{
+	return (((DeviceID)kbd.hid.vendor_id) << 16) | kbd.hid.product_id;
+}
+
+struct Device
+{
+	DeviceID id;
+	DeviceInfo* info;
+	soup::AnalogueKeyboard kbd;
+	soup::Thread thrd;
+	uint8_t actives = 0;
+	uint16_t active_codes[16];
+	float active_analogues[16];
+
+	Device(soup::AnalogueKeyboard&& kbd)
+	:
+		id(make_device_id(kbd)),
+		info(new_device_info(kbd.hid.vendor_id, kbd.hid.product_id, "Unknown", kbd.name.c_str(), this->id, DeviceType::Keyboard)),
+		kbd(std::move(kbd))
+	{
+	}
+
+	~Device()
+	{
+		drop_device_info(info);
+	}
+};
+
+static soup::RecursiveMutex devices_mtx{};
+static std::vector<soup::SharedPtr<Device>> devices{};
 
 SOUP_CEXPORT int _device_info(DeviceInfo* buffer[], uint32_t len)
 {
-	if (dev_info)
+	devices_mtx.lock();
+	if (len > devices.size())
 	{
-		buffer[0] = dev_info;
-		return 1;
+		len = devices.size();
 	}
-	return 0;
+	for (uint32_t i = 0; i != len; ++i)
+	{
+		buffer[i] = devices[i]->info;
+	}
+	devices_mtx.unlock();
+	return len;
 }
 
 // Actual important stuff
 
 static bool running = true;
-static soup::Thread poll_thread;
-
-static uint8_t actives = 0;
-static uint16_t active_codes[REPORT_RELEASED_KEYS ? 32 : 16];
-static float active_analogues[REPORT_RELEASED_KEYS ? 32 : 16];
+static soup::Thread discover_thread;
 
 [[nodiscard]] static uint16_t mapToWootingKey(soup::Key key)
 {
@@ -132,91 +165,160 @@ using event_handler_t = void(*)(void* data, DeviceEventType eventType, DeviceInf
 
 static void* event_handler_data;
 static event_handler_t event_handler;
-static bool got_initial_devices = false;
+
+static void discover_devices(bool initial)
+{
+	for (auto& kbd : soup::AnalogueKeyboard::getAll())
+	{
+		if (kbd.hid.usage_page == 0xFF54)
+		{
+			// Wooting devices are out-of-scope for this plugin.
+			continue;
+		}
+
+		const auto device_id = make_device_id(kbd);
+		bool known = false;
+		devices_mtx.lock();
+		for (auto it = devices.begin(); it != devices.end(); )
+		{
+			if (!(*it)->thrd.isRunning())
+			{
+				it = devices.erase(it);
+				continue;
+			}
+			if ((*it)->id == device_id)
+			{
+				known = true;
+				break;
+			}
+			++it;
+		}
+		devices_mtx.unlock();
+		if (!known)
+		{
+			auto spDev = soup::make_shared<Device>(std::move(kbd));
+			if (!initial)
+			{
+				event_handler(event_handler_data, DeviceEventType::Connected, spDev->info);
+			}
+
+			spDev->thrd.start([](soup::Capture&& cap)
+			{
+				auto& spDev = cap.get<soup::SharedPtr<Device>>();
+				Device& dev = *spDev;
+				soup::AnalogueKeyboard& kbd = spDev->kbd;
+				while (running && !kbd.disconnected)
+				{
+					auto keys = kbd.getActiveKeys();
+					uint8_t i = 0;
+					for (const auto& key : keys)
+					{
+						dev.active_codes[i] = mapToWootingKey(key.getSoupKey());
+						dev.active_analogues[i] = key.getFValue();
+						++i;
+					}
+					dev.actives = i;
+				}
+			}, spDev);
+
+			devices_mtx.lock();
+			devices.emplace_back(std::move(spDev));
+			devices_mtx.unlock();
+		}
+	}
+}
 
 SOUP_CEXPORT int _initialise(void* data, event_handler_t callback)
 {
 	event_handler_data = data;
 	event_handler = callback;
-	poll_thread.start([](soup::Capture&&)
+	discover_devices(true);
+	const auto num_initial_devices = static_cast<int>(devices.size());
+	discover_thread.start([](soup::Capture&&)
 	{
 		while (running)
 		{
-			for (auto& kbd : soup::AnalogueKeyboard::getAll())
-			{
-				if (kbd.hid.usage_page != 0xFF54) // not a Wooting device?
-				{
-					dev_info = new_device_info(kbd.hid.vendor_id, kbd.hid.product_id, "Unknown", kbd.name.c_str(), 0, DeviceType::Keyboard);
-					if (got_initial_devices)
-					{
-						event_handler(event_handler_data, DeviceEventType::Connected, dev_info);
-					}
-					got_initial_devices = true;
-					while (running && !kbd.disconnected)
-					{
-						auto keys = kbd.getActiveKeys();
-						uint8_t i = 0;
-						for (const auto& key : keys)
-						{
-							active_codes[i] = mapToWootingKey(key.getSoupKey());
-							active_analogues[i] = key.getFValue();
-							++i;
-						}
-						actives = i;
-					}
-					event_handler(event_handler_data, DeviceEventType::Disconnected, dev_info);
-					drop_device_info(dev_info);
-					dev_info = nullptr;
-				}
-			}
-			if (!running)
-			{
-				break;
-			}
-			got_initial_devices = true;
-			soup::os::sleep(100);
+			discover_devices(false);
+			soup::os::sleep(1000);
 		}
 	});
-	while (!got_initial_devices)
-	{
-		soup::os::sleep(1);
-	}
-	return dev_info ? 1 : 0;
+	return num_initial_devices;
 }
 
 #if REPORT_RELEASED_KEYS
 static std::unordered_set<uint16_t> pending_release;
 #endif
 
-SOUP_CEXPORT float read_analog(uint16_t code)
+SOUP_CEXPORT float read_analog(uint16_t code, DeviceID device_id)
 {
-	for (uint8_t i = 0; i != actives; ++i)
+	float ret = 0.0f;
+
+	devices_mtx.lock();
+	for (auto& dev : devices)
 	{
-		if (active_codes[i] == code)
+		if (device_id == 0 || dev->id == device_id)
 		{
-			return active_analogues[i];
+			for (uint8_t i = 0; i != dev->actives; ++i)
+			{
+				if (dev->active_codes[i] == code)
+				{
+					ret = dev->active_analogues[i];
+					goto _break_2;
+				}
+			}
 		}
 	}
-	return 0.0f;
+_break_2:
+	devices_mtx.unlock();
+
+	return ret;
 }
 
-SOUP_CEXPORT int _read_full_buffer(uint16_t* code_buffer, float* analog_buffer, uint32_t len, DeviceID device)
+SOUP_CEXPORT int _read_full_buffer(uint16_t* code_buffer, float* analog_buffer, uint32_t len, DeviceID device_id)
 {
+	SOUP_IF_UNLIKELY (len == 0)
+	{
+		return 0;
+	}
+
+	uint32_t actives = 0;
+	devices_mtx.lock();
+	for (auto& dev : devices)
+	{
+		if (device_id == 0 || dev->id == device_id)
+		{
+			for (uint8_t i = 0; i != dev->actives; ++i)
+			{
+				code_buffer[actives] = dev->active_codes[i];
+				analog_buffer[actives] = dev->active_analogues[i];
+				if (++actives == len)
+				{
+					goto _break_2;
+				}
+			}
+		}
+	}
+_break_2:
+	devices_mtx.unlock();
+
 #if REPORT_RELEASED_KEYS
 	if (!pending_release.empty())
 	{
 		// Keys that are still being pressed don't need a release this update
 		for (uint8_t i = 0; i != actives; ++i)
 		{
-			pending_release.erase(active_codes[i]);
+			pending_release.erase(code_buffer[i]);
 		}
 
 		// Discharge released keys
 		for (const auto& code : pending_release)
 		{
-			active_codes[actives] = code;
-			active_analogues[actives] = 0.0f;
-			actives++;
+			if (actives != len)
+			{
+				code_buffer[actives] = code;
+				analog_buffer[actives] = 0.0f;
+				++actives;
+			}
 		}
 		pending_release.clear();
 	}
@@ -224,24 +326,25 @@ SOUP_CEXPORT int _read_full_buffer(uint16_t* code_buffer, float* analog_buffer, 
 	// Remember active keys for next update
 	for (uint8_t i = 0; i != actives; ++i)
 	{
-		if (active_analogues[i] != 0.0f)
+		if (analog_buffer[i] != 0.0f)
 		{
-			pending_release.emplace(active_codes[i]);
+			pending_release.emplace(code_buffer[i]);
 		}
 	}
 #endif
-	if (len > actives)
-	{
-		len = actives;
-	}
-	memcpy(code_buffer, active_codes, len * sizeof(uint16_t));
-	memcpy(analog_buffer, active_analogues, len * sizeof(float));
-	return len;
+
+	return actives;
 }
 
 SOUP_CEXPORT void unload()
 {
 	running = false;
-	CancelSynchronousIo(poll_thread.handle);
-	poll_thread.awaitCompletion();
+
+	devices_mtx.lock();
+	for (auto& dev : devices)
+	{
+		CancelSynchronousIo(dev->thrd.handle);
+		dev->thrd.awaitCompletion();
+	}
+	devices_mtx.unlock();
 }
