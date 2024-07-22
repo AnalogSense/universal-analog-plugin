@@ -7,8 +7,14 @@
 
 #define ABI_VERSION_TARGET 0
 
+#define LOGGING false
+
 // Some Analog SDK apps rely on read_full_buffer sending a 0 value for released keys instead of stopping to report the key.
 #define REPORT_RELEASED_KEYS true
+
+#if LOGGING
+#include <iostream>
+#endif
 
 #if REPORT_RELEASED_KEYS
 #include <unordered_set>
@@ -183,6 +189,9 @@ static void discover_devices(bool initial)
 		{
 			if (!(*it)->thrd.isRunning())
 			{
+#if LOGGING
+				std::cout << "Removing " << kbd.name << " from devices array" << std::endl;
+#endif
 				it = devices.erase(it);
 				continue;
 			}
@@ -196,6 +205,9 @@ static void discover_devices(bool initial)
 		devices_mtx.unlock();
 		if (!known)
 		{
+#if LOGGING
+			std::cout << "New device: " << kbd.name << std::endl;
+#endif
 			auto spDev = soup::make_shared<Device>(std::move(kbd));
 			if (!initial)
 			{
@@ -219,6 +231,9 @@ static void discover_devices(bool initial)
 					}
 					dev.actives = i;
 				}
+#if LOGGING
+				std::cout << "Thread for " << kbd.name << " is stopping" << std::endl;
+#endif
 			}, spDev);
 
 			devices_mtx.lock();
@@ -230,9 +245,26 @@ static void discover_devices(bool initial)
 
 SOUP_CEXPORT int _initialise(void* data, event_handler_t callback)
 {
+#if LOGGING
+	AllocConsole();
+	{
+		FILE* f;
+		freopen_s(&f, "CONIN$", "r", stdin);
+		freopen_s(&f, "CONOUT$", "w", stderr);
+		freopen_s(&f, "CONOUT$", "w", stdout);
+	}
+#endif
+
 	event_handler_data = data;
 	event_handler = callback;
 	discover_devices(true);
+#if LOGGING
+	std::cout << "Discovered " << devices.size() << " initial devices" << std::endl;
+	for (const auto& dev : devices)
+	{
+		std::cout << "- " << dev->kbd.name << std::endl;
+	}
+#endif
 	const auto num_initial_devices = static_cast<int>(devices.size());
 	discover_thread.start([](soup::Capture&&)
 	{
@@ -347,4 +379,8 @@ SOUP_CEXPORT void unload()
 		dev->thrd.awaitCompletion();
 	}
 	devices_mtx.unlock();
+
+#if LOGGING
+	FreeConsole();
+#endif
 }
