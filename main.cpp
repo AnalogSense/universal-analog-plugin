@@ -148,7 +148,7 @@ SOUP_CEXPORT int _initialise(void* data, event_handler_t callback)
 			{
 				if (kbd.hid.usage_page != 0xFF54) // not a Wooting device?
 				{
-					dev_info = new_device_info(0xFFFF, 0xFFFF, "Unknown", kbd.name.c_str(), 0, DeviceType::Keyboard);
+					dev_info = new_device_info(kbd.hid.vendor_id, kbd.hid.product_id, "Unknown", kbd.name.c_str(), 0, DeviceType::Keyboard);
 					if (got_initial_devices)
 					{
 						event_handler(event_handler_data, DeviceEventType::Connected, dev_info);
