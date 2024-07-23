@@ -371,6 +371,7 @@ _break_2:
 SOUP_CEXPORT void unload()
 {
 	running = false;
+	discover_thread.awaitCompletion();
 
 	devices_mtx.lock();
 	for (auto& dev : devices)
