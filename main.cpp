@@ -268,10 +268,15 @@ SOUP_CEXPORT int _initialise(void* data, event_handler_t callback)
 	const auto num_initial_devices = static_cast<int>(devices.size());
 	discover_thread.start([](soup::Capture&&)
 	{
+		uint8_t i = 0;
 		while (running)
 		{
-			discover_devices(false);
-			soup::os::sleep(1000);
+			if (++i == 100)
+			{
+				i = 0;
+				discover_devices(false);
+			}
+			soup::os::sleep(10);
 		}
 	});
 	return num_initial_devices;
@@ -376,7 +381,7 @@ SOUP_CEXPORT void unload()
 	devices_mtx.lock();
 	for (auto& dev : devices)
 	{
-		CancelSynchronousIo(dev->thrd.handle);
+		dev->kbd.hid.cancelReceiveReport();
 		dev->thrd.awaitCompletion();
 	}
 	devices_mtx.unlock();
