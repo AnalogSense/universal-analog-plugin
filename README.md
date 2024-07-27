@@ -18,7 +18,7 @@ A plugin for the [Wooting Analog SDK](https://github.com/WootingKb/wooting-analo
 - Razer Huntsman V3 Pro Tenkeyless*
 - Keychron Q1 HE†
 
-Although the scope of this project goes beyond Razer keyboards, they are currently the only manufacturer of analog keyboards who bothered enough to make the data accessible (besides Wooting). You can view [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1) for all keyboards on my radar, and which ones I've already bought and attempted to get working.
+If your keyboard is not mentioned here, take a look at [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1) for everything that's on my radar. If your keyboard is not on my radar, please let me know!
 
 Note that the actual logic for interacting with the devices is in [soup::AnalogueKeyboard](https://github.com/calamity-inc/Soup/blob/senpai/soup/AnalogueKeyboard.cpp).
 
