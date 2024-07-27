@@ -173,7 +173,15 @@ static event_handler_t event_handler;
 
 static void discover_devices(bool initial)
 {
-	for (auto& kbd : soup::AnalogueKeyboard::getAll())
+	auto kbds = soup::AnalogueKeyboard::getAll();
+	if (kbds.empty())
+	{
+		devices_mtx.lock();
+		devices.clear();
+		devices_mtx.unlock();
+		return;
+	}
+	for (auto& kbd : kbds)
 	{
 #ifndef WOOTING_SUPPORT
 		if (kbd.hid.usage_page == 0xFF54)
