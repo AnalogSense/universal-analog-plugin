@@ -12,10 +12,11 @@ A plugin for the [Wooting Analog SDK](https://github.com/WootingKb/wooting-analo
 ## Supported Keyboards
 
 - Razer Huntsman V2 Analog
-- Razer Huntsman Mini Analog*†
+- Razer Huntsman Mini Analog*‡
 - Razer Huntsman V3 Pro*
 - Razer Huntsman V3 Pro Mini*
 - Razer Huntsman V3 Pro Tenkeyless*
+- Keychron Q1 HE†
 
 Although the scope of this project goes beyond Razer keyboards, they are currently the only manufacturer of analog keyboards who bothered enough to make the data accessible (besides Wooting). You can view [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1) for all keyboards on my radar, and which ones I've already bought and attempted to get working.
 
@@ -25,4 +26,6 @@ Note that the actual logic for interacting with the devices is in [soup::Analogu
 
 \* Razer Synapse needs to be running for analogue inputs to be received from this keyboard.
 
-† I don't own this keyboard, so I've not had a chance to test it, but it should work.
+† The support for this keyboard is polling based, so lag and missed inputs are to be expected.
+
+‡ I don't own this keyboard, so I've not had a chance to test it, but it should work.
