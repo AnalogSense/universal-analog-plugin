@@ -14,7 +14,8 @@ A plugin for the [Wooting Analog SDK](https://github.com/WootingKb/wooting-analo
 - Razer Huntsman V2 Analog
 - Razer Huntsman Mini Analog*†
 - Razer Huntsman V3 Pro*
-- Razer Huntsman V3 Pro Mini*†
+- Razer Huntsman V3 Pro Mini*
+- Razer Huntsman V3 Pro Tenkeyless*
 
 Although the scope of this project goes beyond Razer keyboards, they are currently the only manufacturer of analog keyboards who bothered enough to make the data accessible (besides Wooting). You can view [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1) for all keyboards on my radar, and which ones I've already bought and attempted to get working.
 
