@@ -112,12 +112,11 @@ struct Device
 	uint16_t active_codes[16];
 	float active_analogues[16];
 
-	Device(soup::AnalogueKeyboard&& kbd)
-	:
-		id(make_device_id(kbd)),
-		info(new_device_info(kbd.hid.vendor_id, kbd.hid.product_id, "Unknown", kbd.name.c_str(), this->id, DeviceType::Keyboard)),
-		kbd(std::move(kbd))
+	Device(soup::AnalogueKeyboard&& _kbd)
+		: id(make_device_id(_kbd)), kbd(std::move(_kbd))
 	{
+		auto manufacturer_name = kbd.hid.getManufacturerName();
+		info = new_device_info(kbd.hid.vendor_id, kbd.hid.product_id, manufacturer_name.c_str(), kbd.name.c_str(), this->id, DeviceType::Keyboard);
 	}
 
 	~Device()
