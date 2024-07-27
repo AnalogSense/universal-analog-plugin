@@ -20,6 +20,8 @@ A plugin for the [Wooting Analog SDK](https://github.com/WootingKb/wooting-analo
 
 If your keyboard is not mentioned here, take a look at [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1) for everything that's on my radar. If your keyboard is not on my radar, please let me know!
 
+Wooting devices are also supported, but only with the `universal-analog-plugin-with-wooting-device-support.dll`, in which case it acts as a replacement for the wooting-analog-plugin.
+
 Note that the actual logic for interacting with the devices is in [soup::AnalogueKeyboard](https://github.com/calamity-inc/Soup/blob/senpai/soup/AnalogueKeyboard.cpp).
 
 ---
