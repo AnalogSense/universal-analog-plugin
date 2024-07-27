@@ -175,11 +175,12 @@ static void discover_devices(bool initial)
 {
 	for (auto& kbd : soup::AnalogueKeyboard::getAll())
 	{
+#ifndef WOOTING_SUPPORT
 		if (kbd.hid.usage_page == 0xFF54)
 		{
-			// Wooting devices are out-of-scope for this plugin.
 			continue;
 		}
+#endif
 
 		const auto device_id = make_device_id(kbd);
 		bool known = false;
