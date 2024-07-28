@@ -28,6 +28,6 @@ Note that the actual logic for interacting with the devices is in [soup::Analogu
 
 \* Razer Synapse needs to be running for analogue inputs to be received from this keyboard.
 
-† The support for this keyboard is polling based, so lag and missed inputs are to be expected.
+† The support for this keyboard is polling based, so you may encounter lag and missed inputs.
 
 ‡ I don't own this keyboard, so I've not had a chance to test it, but it should work.
