@@ -108,9 +108,10 @@ struct Device
 	DeviceInfo* info;
 	soup::AnalogueKeyboard kbd;
 	soup::Thread thrd;
+	static constexpr auto MAX_ACTIVES = 16;
 	uint8_t actives = 0;
-	uint16_t active_codes[16];
-	float active_analogues[16];
+	uint16_t active_codes[MAX_ACTIVES];
+	float active_analogues[MAX_ACTIVES];
 
 	Device(soup::AnalogueKeyboard&& _kbd)
 		: id(make_device_id(_kbd)), kbd(std::move(_kbd))
@@ -235,7 +236,10 @@ static void discover_devices(bool initial)
 					{
 						dev.active_codes[i] = mapToWootingKey(key.getSoupKey());
 						dev.active_analogues[i] = key.getFValue();
-						++i;
+						if (++i == Device::MAX_ACTIVES)
+						{
+							break;
+						}
 					}
 					dev.actives = i;
 				}
