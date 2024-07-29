@@ -11,8 +11,8 @@ A plugin for the [Wooting Analog SDK](https://github.com/WootingKb/wooting-analo
 
 ## Supported Keyboards
 
-- Razer Huntsman V2 Analog
-- Razer Huntsman Mini Analog
+- Razer Huntsman V2 Analog*
+- Razer Huntsman Mini Analog*
 - Razer Huntsman V3 Pro*
 - Razer Huntsman V3 Pro Mini*
 - Razer Huntsman V3 Pro Tenkeyless*
@@ -26,7 +26,7 @@ Note that the actual logic for interacting with the devices is in [soup::Analogu
 
 ---
 
-\* Razer Synapse needs to be running for analogue inputs to be received from this keyboard.
+\* Razer Synapse needs to be installed and running for analogue inputs to be received from this keyboard.
 
 † The support for this keyboard is polling based, so you may encounter lag and missed inputs.
 
