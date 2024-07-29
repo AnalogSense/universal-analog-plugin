@@ -4,5 +4,5 @@ require ../Soup/soup include_dir=../Soup
 
 arg -O3
 
-name universal-analog-plugin-with-wooting-device-support
+name universal-analog-plugin.with-wooting-device-support
 arg -DWOOTING_SUPPORT

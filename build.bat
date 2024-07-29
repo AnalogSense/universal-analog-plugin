@@ -1,2 +1,2 @@
 sun
-sun universal-analog-plugin-with-wooting-device-support
+sun universal-analog-plugin.with-wooting-device-support
