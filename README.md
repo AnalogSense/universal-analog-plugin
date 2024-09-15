@@ -35,4 +35,4 @@ Note that the actual logic for interacting with the devices is in [soup::Analogu
 
 † I don't own this keyboard, so I've not had a chance to test it, but it should work.
 
-‡ The firmware currently only supports polling individual keys, which can lead to lag and missed inputs given the sheer amount of keys to scan.
+‡ The official firmware only supports polling individual keys, which can lead to lag and missed inputs given the sheer amount of keys to scan, but you can use [custom firmware with full analog report functionality](https://analogsense.org/firmware/).
