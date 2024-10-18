@@ -3,3 +3,4 @@ int/
 *.exp
 *.lib
 !wooting_analog_common.lib
+*.so

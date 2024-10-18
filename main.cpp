@@ -50,12 +50,16 @@ struct DeviceInfo
 // Rust interop stuff
 
 #if ABI_VERSION_TARGET == 0
-#pragma comment(lib, "wooting_analog_common.lib")
-#pragma comment(lib, "Userenv.lib")
-#pragma comment(lib, "ntdll.lib")
-#pragma comment(lib, "Bcrypt.lib")
-#pragma comment(lib, "Ws2_32.lib")
-#pragma comment(lib, "Advapi32.lib")
+	#if SOUP_WINDOWS
+		#pragma comment(lib, "wooting_analog_common.lib")
+		#pragma comment(lib, "Userenv.lib")
+		#pragma comment(lib, "ntdll.lib")
+		#pragma comment(lib, "Bcrypt.lib")
+		#pragma comment(lib, "Ws2_32.lib")
+		#pragma comment(lib, "Advapi32.lib")
+	#else
+		#pragma comment(lib, "./wooting_analog_common.a")
+	#endif
 
 extern "C"
 {
