@@ -4,5 +4,6 @@ require ../Soup/soup include_dir=../Soup
 
 arg -O3
 
-name universal-analog-plugin.with-wooting-device-support
+name abiv1-pluswooting
+arg -DABI_VERSION_TARGET=1
 arg -DWOOTING_SUPPORT

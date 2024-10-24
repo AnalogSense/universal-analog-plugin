@@ -5,8 +5,6 @@
 #include <soup/Thread.hpp>
 #include <soup/SharedPtr.hpp>
 
-#define ABI_VERSION_TARGET 0
-
 #define LOGGING false
 
 // Some Analog SDK apps rely on read_full_buffer sending a 0 value for released keys instead of stopping to report the key.

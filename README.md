@@ -4,10 +4,18 @@ A plugin for the [Wooting Analog SDK](https://github.com/WootingKb/wooting-analo
 
 ## Setup
 
-1. Download the latest `universal-analog-plugin.dll` from [the releases page](https://github.com/calamity-inc/universal-analog-plugin/releases)
+1. Download the latest `universal-analog-plugin.zip` from [the releases page](https://github.com/calamity-inc/universal-analog-plugin/releases)
 2. Navigate to `C:\Program Files\WootingAnalogPlugins` in your File Explorer
-3. Create a new folder called `universal-analog-plugin`
-4. Drop the `universal-analog-plugin.dll` into the `universal-analog-plugin` folder
+3. Move the universal-analog-plugin folder from within the zip file into the WootingAnalogPlugins folder
+
+If you did everything correctly, the file structure should look like this:
+
+```
+WootingAnalogPlugins/
+    universal-analog-plugin/
+        abiv0.dll
+        abiv1.dll
+```
 
 ## Supported Keyboards
 
@@ -28,7 +36,7 @@ A plugin for the [Wooting Analog SDK](https://github.com/WootingKb/wooting-analo
 
 If your keyboard is not mentioned here, take a look at [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1) for everything that's on my radar. If your keyboard is not on my radar, please let me know!
 
-Wooting devices are also supported, but only with the `universal-analog-plugin.with-wooting-device-support.dll`, in which case it acts as a replacement for the wooting-analog-plugin.
+Wooting devices are also supported, but only with the `universal-analog-plugin-with-wooting-device-support`, in which case it acts as a replacement for the wooting-analog-plugin.
 
 Note that the actual logic for interacting with the devices is in [soup::AnalogueKeyboard](https://github.com/calamity-inc/Soup/blob/senpai/soup/AnalogueKeyboard.cpp).
 

@@ -1,0 +1,9 @@
++*.cpp
+dynamic
+require ../Soup/soup include_dir=../Soup
+
+arg -O3
+
+name abiv0-pluswooting
+arg -DABI_VERSION_TARGET=0
+arg -DWOOTING_SUPPORT

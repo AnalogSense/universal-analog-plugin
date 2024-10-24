@@ -3,3 +3,6 @@ dynamic
 require ../Soup/soup include_dir=../Soup
 
 arg -O3
+
+name abiv0
+arg -DABI_VERSION_TARGET=0
