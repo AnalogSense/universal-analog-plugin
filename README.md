@@ -4,9 +4,9 @@ A plugin for the [Wooting Analog SDK](https://github.com/WootingKb/wooting-analo
 
 ## Setup
 
-1. Download the latest `universal-analog-plugin.zip` from [the releases page](https://github.com/calamity-inc/universal-analog-plugin/releases)
+1. Download the latest `Windows.zip` from [the releases page](https://github.com/calamity-inc/universal-analog-plugin/releases)
 2. Navigate to `C:\Program Files\WootingAnalogPlugins` in your File Explorer
-3. Move the universal-analog-plugin folder from within the zip file into the WootingAnalogPlugins folder
+3. Move the `universal-analog-plugin` folder from within the zip file into the `WootingAnalogPlugins` folder
 
 If you did everything correctly, the file structure should look like this:
 

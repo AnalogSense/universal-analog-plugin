@@ -67,7 +67,7 @@ extern "C"
 #else
 inline DeviceInfo* new_device_info(uint16_t vendor_id, uint16_t product_id, const char* manufacturer_name, const char* device_name, DeviceID device_id, DeviceType device_type)
 {
-	return new DeviceInfo(vendor_id, product_id, manufacturer_name, device_name, device_id, device_type);
+	return new DeviceInfo{ vendor_id, product_id, manufacturer_name, device_name, device_id, device_type };
 }
 
 inline void drop_device_info(DeviceInfo* device)

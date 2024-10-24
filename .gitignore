@@ -4,8 +4,7 @@ universal-analog-plugin/
 universal-analog-plugin-with-wooting-device-support/
 
 # Build folders, manually zipped
-universal-analog-plugin.zip
-universal-analog-plugin-with-wooting-device-support.zip
+*.zip
 
 # Unnamed .sun file for Ctrl+B can be used-defined
 .sun
