@@ -30,9 +30,8 @@ WootingAnalogPlugins/
 - DrunkDeer G65<sup>U</sup>
 - DrunkDeer G60<sup>U</sup>
 - Keychron Q1 HE<sup>P</sup>
-- Keychron Q3 HE<sup>P, U</sup>
-- Keychron Q5 HE<sup>P, U</sup>
-- Keychron K2 HE<sup>P, U</sup>
+- Keychron Q3 HE<sup>P</sup>
+- Keychron Q5 HE<sup>P</sup>
 
 If your keyboard is not mentioned here, take a look at [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1) for everything that's on my radar. If your keyboard is not on my radar, please let me know!
 
