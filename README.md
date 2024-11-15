@@ -24,6 +24,9 @@ WootingAnalogPlugins/
 - Razer Huntsman V3 Pro<sup>R</sup>
 - Razer Huntsman V3 Pro Mini<sup>R</sup>
 - Razer Huntsman V3 Pro Tenkeyless<sup>R</sup>
+- NuPhy Field75 HE
+- NuPhy Air60 HE<sup>U</sup>
+- NuPhy Halo65 HE<sup>U</sup>
 - DrunkDeer A75
 - DrunkDeer A75 Pro<sup>U</sup>
 - DrunkDeer G75<sup>U</sup>
