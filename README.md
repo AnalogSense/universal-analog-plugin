@@ -32,10 +32,11 @@ WootingAnalogPlugins/
 - DrunkDeer G75<sup>U</sup>
 - DrunkDeer G65<sup>U</sup>
 - DrunkDeer G60<sup>U</sup>
-- Keychron Q1 HE<sup>P</sup>
-- Keychron Q3 HE<sup>P</sup>
-- Keychron Q5 HE<sup>P</sup>
-- Keychron K2 HE<sup>P</sup>
+- Keychron Q1 HE<sup>P, F</sup>
+- Keychron Q3 HE<sup>P, F</sup>
+- Keychron Q5 HE<sup>P, F</sup>
+- Keychron K2 HE<sup>P, F</sup>
+- Madlions MAD60HE<sup>P</sup>
 
 If your keyboard is not mentioned here, take a look at [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1) for everything that's on my radar. If your keyboard is not on my radar, please let me know!
 
@@ -47,6 +48,8 @@ Note that the actual logic for interacting with the devices is in [soup::Analogu
 
 <sup>R</sup> Razer Synapse needs to be installed and running for analogue inputs to be received from this keyboard.
 
-<sup>P</sup> The official firmware only supports polling individual keys, which can lead to lag and missed inputs given the sheer amount of keys to scan, but you can use [custom firmware with full analog report functionality](https://analogsense.org/firmware/).
+<sup>P</sup> The official firmware only supports polling, which can lead to lag and missed inputs.
+
+<sup>F</sup> [Custom firmware with full analog report functionality is available](https://analogsense.org/firmware/).
 
 <sup>U</sup> I don't own this keyboard, so I've not had a chance to test it, but it should work.
