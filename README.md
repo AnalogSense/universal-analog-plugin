@@ -17,15 +17,15 @@ WootingAnalogPlugins/
         abiv1.dll
 ```
 
-## Supported Keyboards
+## Supported Keyboards/Devices
 
 - Razer Huntsman V2 Analog<sup>R</sup>
 - Razer Huntsman Mini Analog<sup>R</sup>
 - Razer Huntsman V3 Pro<sup>R</sup>
 - Razer Huntsman V3 Pro Mini<sup>R</sup>
 - Razer Huntsman V3 Pro Tenkeyless<sup>R</sup>
-- NuPhy (I've personally only tested the Field75 HE but all should work.)
-- DrunkDeer (I've personally only tested the A75 but all should work.)
+- Everything by NuPhy
+- Everything by DrunkDeer
 - Keychron Q1 HE<sup>P, F</sup>
 - Keychron Q3 HE<sup>P, F</sup>
 - Keychron Q5 HE<sup>P, F</sup>
@@ -46,4 +46,4 @@ Note that the actual logic for interacting with the devices is in [soup::Analogu
 
 <sup>F</sup> [Custom firmware with full analog report functionality is available](https://analogsense.org/firmware/).
 
-<sup>U</sup> I don't own this keyboard, so I've not had a chance to test it, but it should work.
+<!-- <sup>U</sup> I don't own this keyboard, so I've not had a chance to test it, but it should work. -->
