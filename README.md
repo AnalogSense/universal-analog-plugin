@@ -24,14 +24,8 @@ WootingAnalogPlugins/
 - Razer Huntsman V3 Pro<sup>R</sup>
 - Razer Huntsman V3 Pro Mini<sup>R</sup>
 - Razer Huntsman V3 Pro Tenkeyless<sup>R</sup>
-- NuPhy Field75 HE
-- NuPhy Air60 HE<sup>U</sup>
-- NuPhy Halo65 HE<sup>U</sup>
-- DrunkDeer A75
-- DrunkDeer A75 Pro<sup>U</sup>
-- DrunkDeer G75<sup>U</sup>
-- DrunkDeer G65<sup>U</sup>
-- DrunkDeer G60<sup>U</sup>
+- NuPhy (I've personally only tested the Field75 HE but all should work.)
+- DrunkDeer (I've personally only tested the A75 but all should work.)
 - Keychron Q1 HE<sup>P, F</sup>
 - Keychron Q3 HE<sup>P, F</sup>
 - Keychron Q5 HE<sup>P, F</sup>
