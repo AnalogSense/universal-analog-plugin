@@ -31,6 +31,7 @@ WootingAnalogPlugins/
 - Keychron Q5 HE<sup>P, F</sup>
 - Keychron K2 HE<sup>P, F</sup>
 - Madlions MAD60HE<sup>P</sup>
+- Madlions MAD68HE<sup>P</sup>
 
 If your keyboard is not mentioned here, take a look at [The List](https://github.com/calamity-inc/universal-analog-plugin/issues/1) for everything that's on my radar. If your keyboard is not on my radar, please let me know!
 
