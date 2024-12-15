@@ -35,7 +35,9 @@ enum class DeviceType : int
 	Other = 3,
 };
 
-struct DeviceInfo
+using DeviceInfo = void; // opaque
+
+struct DeviceInfo_FFI
 {
 	uint16_t vendor_id;
 	uint16_t product_id;
@@ -67,12 +69,12 @@ extern "C"
 #else
 inline DeviceInfo* new_device_info(uint16_t vendor_id, uint16_t product_id, const char* manufacturer_name, const char* device_name, DeviceID device_id, DeviceType device_type)
 {
-	return new DeviceInfo{ vendor_id, product_id, manufacturer_name, device_name, device_id, device_type };
+	return reinterpret_cast<DeviceInfo*>(new DeviceInfo_FFI{ vendor_id, product_id, manufacturer_name, device_name, device_id, device_type });
 }
 
 inline void drop_device_info(DeviceInfo* device)
 {
-	delete device;
+	delete reinterpret_cast<DeviceInfo_FFI*>(device);
 }
 #endif
 
