@@ -1,6 +1,6 @@
 +*.cpp
 dynamic
-require ../Soup/soup include_dir=../Soup
+require Soup/soup include_dir=Soup
 
 arg -O3
 
