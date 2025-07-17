@@ -1,0 +1,9 @@
++*.cpp
+dynamic
+require Soup/soup include_dir=Soup
+
+arg -O3
+
+name abiv1-32bit
+arg -DABI_VERSION_TARGET=1
+32bit

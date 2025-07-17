@@ -6,9 +6,13 @@ del abiv0.exp abiv0.lib
 sun abiv1
 del abiv1.exp abiv1.lib
 
+sun abiv1-32bit
+del abiv1-32bit.exp abiv1-32bit.lib
+
 @mkdir universal-analog-plugin
 mv abiv0.dll universal-analog-plugin/abiv0.dll
 mv abiv1.dll universal-analog-plugin/abiv1.dll
+mv abiv1-32bit.dll universal-analog-plugin/abiv1-32bit.dll
 
 REM Build universal-analog-plugin-with-wooting-device-support
 
@@ -18,6 +22,10 @@ del abiv0-pluswooting.exp abiv0-pluswooting.lib
 sun abiv1-pluswooting
 del abiv1-pluswooting.exp abiv1-pluswooting.lib
 
+sun abiv1-32bit-pluswooting
+del abiv1-32bit-pluswooting.exp abiv1-32bit-pluswooting.lib
+
 @mkdir universal-analog-plugin-with-wooting-device-support
 mv abiv0-pluswooting.dll universal-analog-plugin-with-wooting-device-support/abiv0.dll
 mv abiv1-pluswooting.dll universal-analog-plugin-with-wooting-device-support/abiv1.dll
+mv abiv1-32bit-pluswooting.dll universal-analog-plugin-with-wooting-device-support/abiv1-32bit.dll

@@ -15,6 +15,7 @@ WootingAnalogPlugins/
     universal-analog-plugin/
         abiv0.dll
         abiv1.dll
+        abiv1-32bit.dll
 ```
 
 ## Supported Keyboards/Devices
