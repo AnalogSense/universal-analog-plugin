@@ -3,7 +3,7 @@
 #include <soup/os.hpp>
 #include <soup/RecursiveMutex.hpp>
 #include <soup/Thread.hpp>
-#include <soup/SharedPtr.hpp>
+#include <soup/UniquePtr.hpp>
 
 #define LOGGING false
 
@@ -131,7 +131,7 @@ struct Device
 };
 
 static soup::RecursiveMutex devices_mtx{};
-static std::vector<soup::SharedPtr<Device>> devices{};
+static std::vector<soup::UniquePtr<Device>> devices{};
 
 SOUP_CEXPORT int _device_info(DeviceInfo* buffer[], uint32_t len)
 {
@@ -180,14 +180,25 @@ static event_handler_t event_handler;
 
 static void discover_devices(bool initial)
 {
-	auto kbds = soup::AnalogueKeyboard::getAll();
-	if (kbds.empty())
+	if (!initial)
 	{
 		devices_mtx.lock();
-		devices.clear();
+		for (auto it = devices.begin(); it != devices.end(); )
+		{
+			if (!(*it)->thrd.isRunning())
+			{
+#if LOGGING
+				std::cout << "Removing " << kbd.name << " from devices array" << std::endl;
+#endif
+				it = devices.erase(it);
+				continue;
+			}
+			++it;
+		}
 		devices_mtx.unlock();
-		return;
 	}
+
+	auto kbds = soup::AnalogueKeyboard::getAll();
 	for (auto& kbd : kbds)
 	{
 #ifndef WOOTING_SUPPORT
@@ -200,22 +211,13 @@ static void discover_devices(bool initial)
 		const auto device_id = make_device_id(kbd);
 		bool known = false;
 		devices_mtx.lock();
-		for (auto it = devices.begin(); it != devices.end(); )
+		for (const auto& dev : devices)
 		{
-			if (!(*it)->thrd.isRunning())
-			{
-#if LOGGING
-				std::cout << "Removing " << kbd.name << " from devices array" << std::endl;
-#endif
-				it = devices.erase(it);
-				continue;
-			}
-			if ((*it)->id == device_id)
+			if (dev->id == device_id)
 			{
 				known = true;
 				break;
 			}
-			++it;
 		}
 		devices_mtx.unlock();
 		if (!known)
@@ -223,17 +225,16 @@ static void discover_devices(bool initial)
 #if LOGGING
 			std::cout << "New device: " << kbd.name << std::endl;
 #endif
-			auto spDev = soup::make_shared<Device>(std::move(kbd));
+			auto upDev = soup::make_unique<Device>(std::move(kbd));
 			if (!initial)
 			{
-				event_handler(event_handler_data, DeviceEventType::Connected, spDev->info);
+				event_handler(event_handler_data, DeviceEventType::Connected, upDev->info);
 			}
 
-			spDev->thrd.start([](soup::Capture&& cap)
+			upDev->thrd.start([](soup::Capture&& cap)
 			{
-				auto& spDev = cap.get<soup::SharedPtr<Device>>();
-				Device& dev = *spDev;
-				soup::AnalogueKeyboard& kbd = spDev->kbd;
+				Device& dev = *cap.get<Device*>();
+				soup::AnalogueKeyboard& kbd = dev.kbd;
 				while (running && !kbd.disconnected)
 				{
 					auto keys = kbd.getActiveKeys();
@@ -252,10 +253,10 @@ static void discover_devices(bool initial)
 #if LOGGING
 				std::cout << "Thread for " << kbd.name << " is stopping" << std::endl;
 #endif
-			}, spDev);
+			}, upDev.get());
 
 			devices_mtx.lock();
-			devices.emplace_back(std::move(spDev));
+			devices.emplace_back(std::move(upDev));
 			devices_mtx.unlock();
 		}
 	}
@@ -309,7 +310,7 @@ SOUP_CEXPORT float read_analog(uint16_t code, DeviceID device_id)
 	float ret = 0.0f;
 
 	devices_mtx.lock();
-	for (auto& dev : devices)
+	for (const auto& dev : devices)
 	{
 		if (device_id == 0 || dev->id == device_id)
 		{
@@ -338,7 +339,7 @@ SOUP_CEXPORT int _read_full_buffer(uint16_t* code_buffer, float* analog_buffer, 
 
 	uint32_t actives = 0;
 	devices_mtx.lock();
-	for (auto& dev : devices)
+	for (const auto& dev : devices)
 	{
 		if (device_id == 0 || dev->id == device_id)
 		{
@@ -397,7 +398,7 @@ SOUP_CEXPORT void unload()
 	discover_thread.awaitCompletion();
 
 	devices_mtx.lock();
-	for (auto& dev : devices)
+	for (const auto& dev : devices)
 	{
 		dev->kbd.hid.cancelReceiveReport();
 		dev->thrd.awaitCompletion();
