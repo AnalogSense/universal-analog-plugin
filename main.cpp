@@ -45,6 +45,7 @@ struct DeviceInfo_FFI
 	const char* device_name;
 	DeviceID device_id;
 	DeviceType device_type;
+	// For ABI v2, add support level?
 };
 
 // Rust interop stuff
